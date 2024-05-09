@@ -8,7 +8,13 @@ namespace Classes
 {
     internal class SmoothSort
     {
-        public static void Smoothsort()
+        public static void SmoothsortAscending()
+        {
+            //
+            // TODO: Add algorhitm of smooth sort here
+            //
+        }
+        public static void SmoothsortDescending()
         {
             //
             // TODO: Add algorhitm of smooth sort here

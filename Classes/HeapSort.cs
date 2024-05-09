@@ -8,7 +8,13 @@ namespace Classes
 {
     internal class HeapSort
     {
-        public static void Heapsort()
+        public static void HeapsortAscending()
+        {
+            //
+            // TODO: Add algorhitm of heap sort here
+            //
+        }
+        public static void HeapsortDescending()
         {
             //
             // TODO: Add algorhitm of heap sort here
