@@ -12,7 +12,7 @@ namespace КР
         public string? ArrayCreation {  get; set; }
         public TextBox LengthOfArrayTextBox { get; set; }
         public int ArrayLength { get; set; }
-        public int[]? array { get; set; }
+        public int[]? MyArray { get; set; }
 
         public Form1()
         {
@@ -24,36 +24,24 @@ namespace КР
         private void Form1_Load(object sender, EventArgs e)
         {
             Button startButton = AddButton("Start", 1700, 900, 35, 150);
-            this.Controls.Add(startButton);
             Button saveButton = AddButton("Save", 1530, 900, 35, 150);
-            this.Controls.Add(saveButton);
-            ComboBox methodComboBox = new ComboBox();
-            methodComboBox.Items.AddRange(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" });
-            methodComboBox.SelectedIndex = 0;
-            methodComboBox.Location = new Point(100, 175);
-            methodComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            methodComboBox.Width = 150;
-            this.Controls.Add(methodComboBox);
-            SortingMethod = GetSortingMethod(methodComboBox);
-            AddLabel("Choose sorting method:", 100, 100, 50, 500);
-            AddLabel("Create an array:", 100, 250, 50, 500);
+
+            AddLabel("Enter the length of an array:", 100, 100, 50, 500, "Times", 18, FontStyle.Bold);
+            LengthOfArrayTextBox = InitializeTextBox(100, 175, 60, 100);
+            AddLabel("(from 100 to 50 000)", 210, 175, 50, 400, "Times", 14, FontStyle.Regular);
+
+            AddLabel("Create an array:", 100, 250, 50, 500, "Times", 18, FontStyle.Bold);
             InitializeRadioButtons();
-            AddLabel("Choose sorting order:", 100, 475, 50, 500);
-            ComboBox orderComboBox = new ComboBox();
-            orderComboBox.Items.AddRange(new object[] { "Ascending", "Descending" });
-            orderComboBox.SelectedIndex = 0;
-            orderComboBox.Location = new Point(100, 550);
-            orderComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            orderComboBox.Width = 150;
-            this.Controls.Add(orderComboBox);
+
+            AddLabel("Choose sorting method:", 100, 475, 50, 500, "Times", 18, FontStyle.Bold);
+            ComboBox methodComboBox = InitializeComboBox(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" }, 100, 550);
+
+            AddLabel("Choose sorting order:", 100, 620, 50, 500, "Times", 18, FontStyle.Bold);
+            ComboBox orderComboBox = InitializeComboBox(new object[] { "Ascending", "Descending" }, 100, 700);
+
+            SortingMethod = GetSortingMethod(methodComboBox);
             SortingOrder = GetSortingOrder(orderComboBox);
-            AddLabel("Enter the length of an array:", 100, 620, 50, 500);
-            LengthOfArrayTextBox = new TextBox();
-            LengthOfArrayTextBox.Height = 60;
-            LengthOfArrayTextBox.Width = 100;
-            LengthOfArrayTextBox.Location = new Point(100, 700);
-            LengthOfArrayTextBox.BorderStyle = BorderStyle.FixedSingle;
-            this.Controls.Add(LengthOfArrayTextBox);
+
             startButton.Click += BtnClick_Click;
         }
 
@@ -64,17 +52,39 @@ namespace КР
             button.Location = new Point(x, y);
             button.Height = Height;
             button.Width = Width;
+            this.Controls.Add(button);
             return button;
         }
-        private void AddLabel(string text, int x, int y, int Height, int Width)
+        private void AddLabel(string text, int x, int y, int Height, int Width, string Font, int FontSize, FontStyle fontStyle)
         {
             Label label = new Label();
             label.Text = text;
             label.Width = Width;
             label.Height = Height;
-            label.Font = new Font("Times", 18, FontStyle.Bold);
+            label.Font = new Font(Font, FontSize, fontStyle);
             label.Location = new Point(x, y);
             this.Controls.Add(label);
+        }
+        private ComboBox InitializeComboBox(object[] items, int x, int y)
+        {
+            ComboBox ComboBox = new ComboBox();
+            ComboBox.Items.AddRange(items);
+            ComboBox.SelectedIndex = 0;
+            ComboBox.Location = new Point(x, y);
+            ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboBox.Width = 150;
+            this.Controls.Add(ComboBox);
+            return ComboBox;
+        }
+        private TextBox InitializeTextBox(int  x, int y, int Height, int Width)
+        {
+            TextBox textBox = new TextBox();
+            textBox.Height = Height;
+            textBox.Width = Width;
+            textBox.Location = new Point(x, y);
+            textBox.BorderStyle = BorderStyle.FixedSingle;
+            this.Controls.Add(textBox);
+            return textBox;
         }
         private RadioButton AddRadioButton(string text, int x, int y, int Height, int Width)
         {
@@ -128,19 +138,26 @@ namespace КР
                 MessageBox.Show("Entered length is not a number!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            if (ArrayLength > 50000 || ArrayLength < 100)
+            {
+                MessageBox.Show("Entered length is not in range of possible lengths!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(ArrayCreation))
             {
                 if (ArrayCreation == "Organised")
                 {
-                    array = GetArray.GetOrganisedArray(ArrayLength);
+                    MyArray = GetArray.GetOrganisedArray(ArrayLength);
                 }
                 if (ArrayCreation == "Reversed")
                 {
-                    array = GetArray.GetReversedArray(ArrayLength);
+                    MyArray = GetArray.GetReversedArray(ArrayLength);
                 }
                 if (ArrayCreation == "Random")
                 {
-                    array = GetArray.GetRandomArray(ArrayLength);
+                    MyArray = GetArray.GetRandomArray(ArrayLength);
                 }
             }
             else
