@@ -1,7 +1,10 @@
 using System.Runtime.CompilerServices;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
+using System.Threading.Tasks;
 using Classes;
+using System;
 
 namespace КР
 {
@@ -37,13 +40,8 @@ namespace КР
             InitializeRadioButtons();
 
             AddLabel("Choose sorting method:", 100, 475, 50, 500, "Times", 18, FontStyle.Bold);
-            ComboBox methodComboBox = InitializeComboBox(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" }, 100, 550);
-
             AddLabel("Choose sorting order:", 100, 620, 50, 500, "Times", 18, FontStyle.Bold);
-            ComboBox orderComboBox = InitializeComboBox(new object[] { "Ascending", "Descending" }, 100, 700);
-
-            SortingMethod = GetSortingMethod(methodComboBox);
-            SortingOrder = GetSortingOrder(orderComboBox);
+            InitializeComboBoxes();
             startButton.Click += StrtBtnClick_Click;
             saveButton.Click += SvBtnClick_Click;
         }
@@ -67,17 +65,6 @@ namespace КР
             label.Font = new Font(Font, FontSize, fontStyle);
             label.Location = new Point(x, y);
             this.Controls.Add(label);
-        }
-        private ComboBox InitializeComboBox(object[] items, int x, int y)
-        {
-            ComboBox ComboBox = new ComboBox();
-            ComboBox.Items.AddRange(items);
-            ComboBox.SelectedIndex = 0;
-            ComboBox.Location = new Point(x, y);
-            ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            ComboBox.Width = 150;
-            this.Controls.Add(ComboBox);
-            return ComboBox;
         }
         private TextBox InitializeTextBox(int  x, int y, int Height, int Width)
         {
@@ -116,18 +103,44 @@ namespace КР
             RadioButton radioButton = sender as RadioButton;
             if (radioButton != null && radioButton.Checked)
             {
-                if (radioButton.Text == "Organised")
-                {
-                    ArrayCreation = radioButton.Text;
-                }
-                else if (radioButton.Text == "Reversed")
-                {
-                    ArrayCreation = radioButton.Text;
-                }
-                else if (radioButton.Text == "Random")
-                {
-                    ArrayCreation = radioButton.Text;
-                }
+                ArrayCreation = radioButton.Text;
+            }
+        }
+        private ComboBox AddComboBox(object[] items, int x, int y)
+        {
+            ComboBox ComboBox = new ComboBox();
+            ComboBox.Items.AddRange(items);
+            ComboBox.SelectedIndex = 0;
+            ComboBox.Location = new Point(x, y);
+            ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            ComboBox.Width = 150;
+            return ComboBox;
+        }
+        private void InitializeComboBoxes()
+        {
+            ComboBox methodComboBox = AddComboBox(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" }, 100, 550);
+            SortingMethod = methodComboBox.SelectedItem.ToString();
+            methodComboBox.SelectedIndexChanged += methodComboBox_Checked;
+            this.Controls.Add(methodComboBox);
+            ComboBox orderComboBox = AddComboBox(new object[] { "Ascending", "Descending" }, 100, 700);
+            SortingOrder = orderComboBox.SelectedItem.ToString();
+            orderComboBox.SelectedIndexChanged += orderComboBox_Checked;
+            this.Controls.Add(orderComboBox);
+        }
+        private void methodComboBox_Checked(object sender, EventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            if (comboBox != null && comboBox.SelectedItem != null)
+            {
+                SortingMethod = comboBox.SelectedItem.ToString();
+            }
+        }
+        private void orderComboBox_Checked(object sender, EventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            if (comboBox != null && comboBox.SelectedItem != null)
+            {
+                SortingOrder = comboBox.SelectedItem.ToString();
             }
         }
         private void StrtBtnClick_Click(object sender, EventArgs e)
@@ -170,6 +183,7 @@ namespace КР
             }
             if (BlocksPanel != null)
             {
+                BlocksPanel.Controls.Clear();
                 this.Controls.Remove(BlocksPanel);
                 BlocksPanel.Dispose();
                 BlocksPanel = null;
@@ -181,9 +195,11 @@ namespace КР
                 AutoScroll = true,
                 BorderStyle = BorderStyle.FixedSingle
             };
-
             this.Controls.Add(BlocksPanel);
             CreateBlocks(BlocksPanel);
+            SortedArray = new int[ArrayLength];
+            MyArray.CopyTo(SortedArray, 0);
+            PerformSorting();
         }
         private void SvBtnClick_Click(object sender, EventArgs e)
         {
@@ -205,9 +221,9 @@ namespace КР
                     using (StreamWriter writer = new StreamWriter(filePath))
                     {
                         writer.WriteLine("Generated array:");
-                        writer.WriteLine(string.Join(",", MyArray));
+                        writer.WriteLine(string.Join(", ", MyArray));
                         writer.WriteLine("Sorted array:");
-                        writer.WriteLine(string.Join(",", SortedArray));
+                        writer.WriteLine(string.Join(", ", SortedArray));
                         writer.WriteLine("Date and time of saving: " + DateTime.Now.ToString());
                     }
 
@@ -284,15 +300,81 @@ namespace КР
                 }
             }
         }
-        private string GetSortingOrder(ComboBox combobox)
+        public void SwapBars(Panel panel, int i, int j)
         {
-            string sortingOrder = combobox.SelectedItem.ToString();
-            return sortingOrder;
+            if (panel.InvokeRequired)
+            {
+                panel.Invoke(new Action(() => SwapBars(panel, i, j)));
+                return;
+            }
+            if (i < 0 || i >= panel.Controls.Count || j < 0 || j >= panel.Controls.Count)
+            {
+                return;
+            }
+            Panel block1 = panel.Controls[i] as Panel;
+            Panel block2 = panel.Controls[j] as Panel;
+            if (block1 == null || block2 == null)
+            {
+                return;
+            }
+            int tempX = block1.Location.X;
+            block1.Location = new Point(block2.Location.X, block1.Location.Y);
+            block2.Location = new Point(tempX, block2.Location.Y);
+            panel.Controls.SetChildIndex(block1, j);
+            panel.Controls.SetChildIndex(block2, i);
+            System.Threading.Thread.Sleep(1);
         }
-        private string GetSortingMethod(ComboBox combobox)
+        private void Sorting_BlocksSwapped(object sender, BlockSwapEventArgs e)
         {
-            string sortingMethod = combobox.SelectedItem.ToString();
-            return sortingMethod;
+            SwapBars(BlocksPanel, e.Index1, e.Index2);
+        }
+        private void PerformSorting()
+        {
+            if (SortingMethod == "Quick Sort")
+            {
+                if (SortingOrder == "Ascending")
+                {
+                    QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
+                    QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1);
+                    QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                }
+                if (SortingOrder == "Descending")
+                {
+                    QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
+                    QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1);
+                    QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                }
+            }
+            else if (SortingMethod == "Heap Sort")
+            {
+                if (SortingOrder == "Ascending")
+                {
+                    HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
+                    SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length);
+                    HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                }
+                if (SortingOrder == "Descending")
+                {
+                    HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
+                    SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length);
+                    HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                }
+            }
+            else if (SortingMethod == "Smooth Sort")
+            {
+                if (SortingOrder == "Ascending")
+                {
+                    SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
+                    SortedArray = SmoothSort.SmoothSortAscending(SortedArray);
+                    SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                }
+                if (SortingOrder == "Descending")
+                {
+                    SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
+                    SortedArray = SmoothSort.SmoothSortDescending(SortedArray);
+                    SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                }
+            }
         }
     }
 }
