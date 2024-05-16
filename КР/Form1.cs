@@ -13,6 +13,9 @@ namespace КР
         public TextBox LengthOfArrayTextBox { get; set; }
         public int ArrayLength { get; set; }
         public int[]? MyArray { get; set; }
+        public int[]? VisualiseArray {  get; set; }
+        public int[]? SortedArray { get; set; }
+        private Panel? BlocksPanel {  get; set; }
 
         public Form1()
         {
@@ -41,8 +44,8 @@ namespace КР
 
             SortingMethod = GetSortingMethod(methodComboBox);
             SortingOrder = GetSortingOrder(orderComboBox);
-
-            startButton.Click += BtnClick_Click;
+            startButton.Click += StrtBtnClick_Click;
+            saveButton.Click += SvBtnClick_Click;
         }
 
         private Button AddButton(string text, int x, int y, int Height, int Width)
@@ -127,7 +130,7 @@ namespace КР
                 }
             }
         }
-        private void BtnClick_Click(object sender, EventArgs e)
+        private void StrtBtnClick_Click(object sender, EventArgs e)
         {
             try
             {
@@ -165,7 +168,121 @@ namespace КР
                 MessageBox.Show("Please, choose what array you want to create!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (BlocksPanel != null)
+            {
+                this.Controls.Remove(BlocksPanel);
+                BlocksPanel.Dispose();
+                BlocksPanel = null;
+            }
+            BlocksPanel = new Panel
+            {
+                Location = new Point(620, 50),
+                Size = new Size(1250, 800),
+                AutoScroll = true,
+                BorderStyle = BorderStyle.FixedSingle
+            };
 
+            this.Controls.Add(BlocksPanel);
+            CreateBlocks(BlocksPanel);
+        }
+        private void SvBtnClick_Click(object sender, EventArgs e)
+        {
+            if (MyArray == null || SortedArray == null)
+            {
+                MessageBox.Show("You have to create and sort an array in order to save the results!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Текстові файли (*.txt)|*.txt|Всі файли (*.*)|*.*";
+            saveFileDialog.Title = "Зберегти файл";
+            saveFileDialog.DefaultExt = "txt";
+            saveFileDialog.AddExtension = true;
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = saveFileDialog.FileName;
+                try
+                {
+                    using (StreamWriter writer = new StreamWriter(filePath))
+                    {
+                        writer.WriteLine("Generated array:");
+                        writer.WriteLine(string.Join(",", MyArray));
+                        writer.WriteLine("Sorted array:");
+                        writer.WriteLine(string.Join(",", SortedArray));
+                        writer.WriteLine("Date and time of saving: " + DateTime.Now.ToString());
+                    }
+
+                    MessageBox.Show("File has been successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error has occured while saving the file: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        private void CreateBlocks(Panel blocksPanel)
+        {
+            int panelHeight = blocksPanel.ClientSize.Height;
+            int panelWidth = blocksPanel.ClientSize.Width;
+
+            if (MyArray.Length <= blocksPanel.ClientSize.Width)
+            {
+                int blockWidth = panelWidth / MyArray.Length;
+                if (blockWidth < 1)
+                {
+                    blockWidth = 1;
+                }
+                int minHeight = MyArray.Min();
+                int maxHeight = MyArray.Max();
+
+                for (int i = 0; i < MyArray.Length; i++)
+                {
+                    int height = MyArray[i];
+                    int scaledHeight = 1 + (height - minHeight) * (panelHeight - 1) / (maxHeight - minHeight);
+                    int x = i * panelWidth / MyArray.Length;
+                    int y = panelHeight - scaledHeight;
+
+                    Panel block = new Panel
+                    {
+                        Size = new Size(blockWidth, scaledHeight),
+                        Location = new Point(x, y),
+                        BackColor = Color.FromArgb(255, Math.Abs((height * 2) % 255), Math.Abs((height * 3) % 255))
+                    };
+
+                    blocksPanel.Controls.Add(block);
+                }
+            }
+            else
+            {
+                VisualiseArray = new int[blocksPanel.ClientSize.Width];
+                for (int i = 0; i < blocksPanel.ClientSize.Width; i++)
+                {
+                    VisualiseArray[i] = MyArray[i];
+                }
+                int blockWidth = panelWidth / VisualiseArray.Length;
+                if (blockWidth < 1)
+                {
+                    blockWidth = 1;
+                }
+                int minHeight = VisualiseArray.Min();
+                int maxHeight = VisualiseArray.Max();
+
+                for (int i = 0; i < VisualiseArray.Length; i++)
+                {
+                    int height = VisualiseArray[i];
+                    int scaledHeight = 1 + (height - minHeight) * (panelHeight - 1) / (maxHeight - minHeight);
+                    int x = i * blockWidth;
+                    int y = panelHeight - scaledHeight;
+
+                    Panel block = new Panel
+                    {
+                        Size = new Size(blockWidth, scaledHeight),
+                        Location = new Point(x, y),
+                        BackColor = Color.FromArgb(255, Math.Abs((height * 2) % 255), Math.Abs((height * 3) % 255))
+                    };
+
+                    blocksPanel.Controls.Add(block);
+                }
+            }
         }
         private string GetSortingOrder(ComboBox combobox)
         {

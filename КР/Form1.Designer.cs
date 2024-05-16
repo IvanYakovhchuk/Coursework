@@ -34,7 +34,7 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ButtonFace;
+            BackColor = SystemColors.Info;
             ClientSize = new Size(785, 433);
             ForeColor = SystemColors.ControlText;
             Name = "Form1";
