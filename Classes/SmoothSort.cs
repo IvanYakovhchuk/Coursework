@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,130 +9,268 @@ namespace Classes
 {
     public class SmoothSort
     {
-        private static int Leonardo(int k)
+        private static readonly int[] LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109,
+            177, 287, 465, 753, 1219, 1973, 3193, 5167, 8361, 13529, 21891,
+            35421, 57313, 92735, 150049, 242785, 392835, 635621, 1028457,
+            1664079, 2692537, 4356617, 7049155, 11405773, 18454929, 29860703,
+            48315633, 78176337, 126491971, 204668309, 331160281, 535828591,
+            866988873];
+        private static void SiftAscending(int[] A, int pshift, int head)
         {
-            if (k < 2)
+            int val = A[head];
+            while (pshift > 1)
             {
-                return 1;
-            }
-            return Leonardo(k - 1) + Leonardo(k - 2) + 1;
-        }
-        private static void Heapify(int[] arr, int start, int end)
-        {
-            int i = start;
-            int j = 0;
-            int k = 0;
-            while (k < end - start + 1)
-            {
-                if ((k & 0xAAAAAAAA) == 0xAAAAAAAA)
-                {
-                    j += i;
-                    i >>= 1;
-                }
-                else
-                {
-                    i += j;
-                    j >>= 1;
-                }
+                int rt = head - 1;
+                int lf = head - 1 - LP[pshift - 2];
 
-                k++;
-            }
-            while (i > 0)
-            {
-                j >>= 1;
-                int l = i + j;
-                while (l < end)
+                if (Compare(val, A[lf]) >= 0 && Compare(val, A[rt]) >= 0)
+                    break;
+
+                if (Compare(A[lf], A[rt]) >= 0)
                 {
-                    if (arr[l] > arr[l - i])
-                    {
+                    A[head] = A[lf];
+                    OnArraySwapped(head, lf);
+                    head = lf;
+                    pshift -= 1;
+                }
+                else
+                {
+                    A[head] = A[rt];
+                    OnArraySwapped(head, rt);
+                    head = rt;
+                    pshift -= 2;
+                }
+            }
+            A[head] = val;
+        }
+        private static void SiftDescending(int[] A, int pshift, int head)
+        {
+            int val = A[head];
+            while (pshift > 1)
+            {
+                int rt = head - 1;
+                int lf = head - 1 - LP[pshift - 2];
+
+                if (Compare(val, A[lf]) <= 0 && Compare(val, A[rt]) <= 0)
+                    break;
+
+                if (Compare(A[lf], A[rt]) <= 0)
+                {
+                    A[head] = A[lf];
+                    OnArraySwapped(head, lf);
+                    head = lf;
+                    pshift -= 1;
+                }
+                else
+                {
+                    A[head] = A[rt];
+                    OnArraySwapped(head, rt);
+                    head = rt;
+                    pshift -= 2;
+                }
+            }
+            A[head] = val;
+        }
+        private static void TrinkleAscending(int[] A, int p, int pshift, int head, bool isTrusty)
+        {
+            int val = A[head];
+
+            while (p != 1)
+            {
+                int stepson = head - LP[pshift];
+
+                if (Compare(A[stepson], val) <= 0)
+                    break;
+
+                if (!isTrusty && pshift > 1)
+                {
+                    int rt = head - 1;
+                    int lf = head - 1 - LP[pshift - 2];
+                    if (Compare(A[rt], A[stepson]) >= 0 || Compare(A[lf], A[stepson]) >= 0)
                         break;
+                }
+                A[head] = A[stepson];
+                OnArraySwapped(head, stepson);
+                head = stepson;
+                int trail = BitOperations.TrailingZeroCount((uint)(p & ~1));
+                p >>= trail;
+                pshift += trail;
+                isTrusty = false;
+            }
+
+            if (!isTrusty)
+            {
+                A[head] = val;
+                SiftAscending(A, pshift, head);
+            }
+        }
+        private static void TrinkleDescending(int[] A, int p, int pshift, int head, bool isTrusty)
+        {
+            int val = A[head];
+
+            while (p != 1)
+            {
+                int stepson = head - LP[pshift];
+
+                if (Compare(A[stepson], val) >= 0)
+                    break;
+
+                if (!isTrusty && pshift > 1)
+                {
+                    int rt = head - 1;
+                    int lf = head - 1 - LP[pshift - 2];
+                    if (Compare(A[rt], A[stepson]) <= 0 || Compare(A[lf], A[stepson]) <= 0)
+                        break;
+                }
+                A[head] = A[stepson];
+                OnArraySwapped(head, stepson);
+                head = stepson;
+                int trail = BitOperations.TrailingZeroCount((uint)(p & ~1));
+                p >>= trail;
+                pshift += trail;
+                isTrusty = false;
+            }
+
+            if (!isTrusty)
+            {
+                A[head] = val;
+                SiftDescending(A, pshift, head);
+            }
+        }
+        public static void SmoothSortAscending(int[] A, int lo, int hi)
+        {
+            int head = lo;
+            int p = 1;
+            int pshift = 1;
+
+            while (head < hi)
+            {
+                if ((p & 3) == 3)
+                {
+                    SiftAscending(A, pshift, head);
+                    p >>= 2;
+                    pshift += 2;
+                }
+                else
+                {
+                    if (LP[pshift - 1] >= hi - head)
+                    {
+                        TrinkleAscending(A, p, pshift, head, false);
                     }
-                    (arr[l], arr[l - i]) = (arr[l - i], arr[l]);
-                    OnArraySwapped(l, l - i);
-                    l += i;
+                    else
+                    {
+                        SiftAscending(A, pshift, head);
+                    }
+
+                    if (pshift == 1)
+                    {
+                        p <<= 1;
+                        pshift--;
+                    }
+                    else
+                    {
+                        p <<= (pshift - 1);
+                        pshift = 1;
+                    }
                 }
-                i = j;
+                p |= 1;
+                head++;
             }
-        }
-        public static int[] SmoothSortAscending(int[] arr)
-        {
-            int n = arr.Length;
-            int p = n - 1;
-            int q = p;
-            int r = 0;
-            while (p > 0)
+
+            TrinkleAscending(A, p, pshift, head, false);
+
+            while (pshift != 1 || p != 1)
             {
-                if ((r & 0x03) == 0)
+                if (pshift <= 1)
                 {
-                    Heapify(arr, r, q);
-                }
-                if (Leonardo(r) == p)
-                {
-                    r++;
+                    int trail = BitOperations.TrailingZeroCount((uint)(p & ~1));
+                    p >>= trail;
+                    pshift += trail;
                 }
                 else
                 {
-                    r--;
-                    q -= Leonardo(r);
-                    Heapify(arr, r, q);
-                    q = r - 1;
-                    r++;
+                    p <<= 2;
+                    p ^= 7;
+                    pshift -= 2;
+
+                    TrinkleAscending(A, p >> 1, pshift + 1, head - LP[pshift] - 1, true);
+                    TrinkleAscending(A, p, pshift, head - 1, true);
                 }
-                (arr[0], arr[p]) = (arr[p], arr[0]);
-                OnArraySwapped(0, p);
-                p--;
+                head--;
             }
-            for (int i = 0; i < n - 1; i++)
-            {
-                int j = i + 1;
-                while (j > 0 && arr[j] < arr[j - 1])
-                {
-                    (arr[j], arr[j - 1]) = (arr[j - 1], arr[j]);
-                    OnArraySwapped(j, j - 1);
-                    j--;
-                }
-            }
-            return arr;
         }
-        public static int[] SmoothSortDescending(int[] arr)
+        public static void SmoothSortDescending(int[] A, int lo, int hi)
         {
-            int n = arr.Length;
-            int p = n - 1;
-            int q = p;
-            int r = 0;
-            while (p > 0)
+            int head = lo;
+            int p = 1;
+            int pshift = 1;
+
+            while (head < hi)
             {
-                if ((r & 0x03) == 0)
+                if ((p & 3) == 3)
                 {
-                    Heapify(arr, r, q);
-                }
-                if (Leonardo(r) == p)
-                {
-                    r++;
+                    SiftDescending(A, pshift, head);
+                    p >>= 2;
+                    pshift += 2;
                 }
                 else
                 {
-                    r--;
-                    q -= Leonardo(r);
-                    Heapify(arr, r, q);
-                    q = r - 1;
-                    r++;
+                    if (LP[pshift - 1] >= hi - head)
+                    {
+                        TrinkleDescending(A, p, pshift, head, false);
+                    }
+                    else
+                    {
+                        SiftDescending(A, pshift, head);
+                    }
+
+                    if (pshift == 1)
+                    {
+                        p <<= 1;
+                        pshift--;
+                    }
+                    else
+                    {
+                        p <<= (pshift - 1);
+                        pshift = 1;
+                    }
                 }
-                (arr[0], arr[p]) = (arr[p], arr[0]);
-                OnArraySwapped(0, p);
-                p--;
+                p |= 1;
+                head++;
             }
-            for (int i = 0; i < n - 1; i++)
+
+            TrinkleDescending(A, p, pshift, head, false);
+
+            while (pshift != 1 || p != 1)
             {
-                int j = i + 1;
-                while (j > 0 && arr[j] > arr[j - 1])
+                if (pshift <= 1)
                 {
-                    (arr[j], arr[j - 1]) = (arr[j - 1], arr[j]);
-                    OnArraySwapped(j, j - 1);
-                    j--;
+                    int trail = BitOperations.TrailingZeroCount((uint)(p & ~1));
+                    p >>= trail;
+                    pshift += trail;
                 }
+                else
+                {
+                    p <<= 2;
+                    p ^= 7;
+                    pshift -= 2;
+
+                    TrinkleDescending(A, p >> 1, pshift + 1, head - LP[pshift] - 1, true);
+                    TrinkleDescending(A, p, pshift, head - 1, true);
+                }
+                head--;
             }
-            return arr;
+        }
+        public static int Compare(int left, int right)
+        {
+            int cmpVal;
+            if (left > right)
+                cmpVal = 1;
+            else if (left < right)
+                cmpVal = -1;
+            else 
+                cmpVal = 0;
+            return cmpVal;
         }
         private static void OnArraySwapped(int index1, int index2)
         {

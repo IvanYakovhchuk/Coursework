@@ -15,6 +15,10 @@ namespace КР
         public string? ArrayCreation {  get; set; }
         public TextBox LengthOfArrayTextBox { get; set; }
         public int ArrayLength { get; set; }
+        public TextBox MinBorderTextBox { get; set; }
+        public int MinBorder { get; set; }
+        public TextBox MaxBorderTextBox { get; set; }
+        public int MaxBorder { get; set; }
         public int[]? MyArray { get; set; }
         public int[]? VisualiseArray {  get; set; }
         public int[]? SortedArray { get; set; }
@@ -32,15 +36,22 @@ namespace КР
             Button startButton = AddButton("Start", 1700, 900, 35, 150);
             Button saveButton = AddButton("Save", 1530, 900, 35, 150);
 
-            AddLabel("Enter the length of an array:", 100, 100, 50, 500, "Times", 18, FontStyle.Bold);
-            LengthOfArrayTextBox = InitializeTextBox(100, 175, 60, 100);
-            AddLabel("(from 100 to 50 000)", 210, 175, 50, 400, "Times", 14, FontStyle.Regular);
+            AddLabel("Enter the length of an array:", 100, 50, 50, 500, "Times", 18, FontStyle.Bold);
+            LengthOfArrayTextBox = InitializeTextBox(100, 125, 60, 100);
+            AddLabel("(from 100 to 50 000)", 210, 125, 50, 400, "Times", 14, FontStyle.Regular);
 
-            AddLabel("Create an array:", 100, 250, 50, 500, "Times", 18, FontStyle.Bold);
+            AddLabel("Range of generated numbers:", 100, 200, 50, 500, "Times", 18, FontStyle.Bold);
+            AddLabel("from (-100 000 to 100 000):", 100, 250, 50, 500, "Times", 12, FontStyle.Regular);
+            MinBorderTextBox = InitializeTextBox(172, 315, 60, 100);
+            AddLabel("Min:", 100, 315, 50, 75, "Times", 12, FontStyle.Italic);
+            MaxBorderTextBox = InitializeTextBox(375, 315, 60, 100);
+            AddLabel("Max:", 300, 315, 50, 75, "Times", 12, FontStyle.Italic);
+
+            AddLabel("Create an array:", 100, 375, 50, 500, "Times", 18, FontStyle.Bold);
             InitializeRadioButtons();
 
-            AddLabel("Choose sorting method:", 100, 475, 50, 500, "Times", 18, FontStyle.Bold);
-            AddLabel("Choose sorting order:", 100, 620, 50, 500, "Times", 18, FontStyle.Bold);
+            AddLabel("Choose sorting method:", 100, 600, 50, 500, "Times", 18, FontStyle.Bold);
+            AddLabel("Choose sorting order:", 100, 745, 50, 500, "Times", 18, FontStyle.Bold);
             InitializeComboBoxes();
             startButton.Click += StrtBtnClick_Click;
             saveButton.Click += SvBtnClick_Click;
@@ -87,13 +98,13 @@ namespace КР
         }
         private void InitializeRadioButtons()
         {
-            RadioButton OrganisedArrayRadioButton = AddRadioButton("Organised", 100, 300, 50, 150);
+            RadioButton OrganisedArrayRadioButton = AddRadioButton("Organised", 100, 425, 50, 150);
             OrganisedArrayRadioButton.CheckedChanged += RadioButton_CheckedChanged;
             this.Controls.Add(OrganisedArrayRadioButton);
-            RadioButton BackOrganisedArrayRadioButton = AddRadioButton("Reversed", 100, 350, 50, 150);
+            RadioButton BackOrganisedArrayRadioButton = AddRadioButton("Reversed", 100, 475, 50, 150);
             BackOrganisedArrayRadioButton.CheckedChanged += RadioButton_CheckedChanged;
             this.Controls.Add(BackOrganisedArrayRadioButton);
-            RadioButton RandomArrayRadioButton = AddRadioButton("Random", 100, 400, 50, 150);
+            RadioButton RandomArrayRadioButton = AddRadioButton("Random", 100, 525, 50, 150);
             RandomArrayRadioButton.CheckedChanged += RadioButton_CheckedChanged;
             this.Controls.Add(RandomArrayRadioButton);
 
@@ -118,11 +129,11 @@ namespace КР
         }
         private void InitializeComboBoxes()
         {
-            ComboBox methodComboBox = AddComboBox(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" }, 100, 550);
+            ComboBox methodComboBox = AddComboBox(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" }, 100, 675);
             SortingMethod = methodComboBox.SelectedItem.ToString();
             methodComboBox.SelectedIndexChanged += methodComboBox_Checked;
             this.Controls.Add(methodComboBox);
-            ComboBox orderComboBox = AddComboBox(new object[] { "Ascending", "Descending" }, 100, 700);
+            ComboBox orderComboBox = AddComboBox(new object[] { "Ascending", "Descending" }, 100, 825);
             SortingOrder = orderComboBox.SelectedItem.ToString();
             orderComboBox.SelectedIndexChanged += orderComboBox_Checked;
             this.Controls.Add(orderComboBox);
@@ -151,13 +162,34 @@ namespace КР
             }
             catch (FormatException)
             {
-                MessageBox.Show("Entered length is not a number!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Entered length is not a number!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (ArrayLength > 50000 || ArrayLength < 100)
             {
-                MessageBox.Show("Entered length is not in range of possible lengths!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Entered length is not in range of possible lengths!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                MaxBorder = int.Parse(MaxBorderTextBox.Text);
+                MinBorder = int.Parse(MinBorderTextBox.Text);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Entered borders of the range of generated numbers are not a numbers!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+;           }
+            if (MaxBorder > 100000 || MinBorder < -100000)
+            {
+                MessageBox.Show("Entered borders of the range of generated numbers are out of max range!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (MaxBorder <= MinBorder)
+            {
+                MessageBox.Show("Minimum border of the range of generated numbers can't be larger than or equal to the maximum one!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -165,20 +197,25 @@ namespace КР
             {
                 if (ArrayCreation == "Organised")
                 {
-                    MyArray = GetArray.GetOrganisedArray(ArrayLength);
+                    MyArray = GetArray.GetOrganisedArray(ArrayLength, MinBorder, MaxBorder);
                 }
                 if (ArrayCreation == "Reversed")
                 {
-                    MyArray = GetArray.GetReversedArray(ArrayLength);
+                    MyArray = GetArray.GetReversedArray(ArrayLength, MinBorder, MaxBorder);
                 }
                 if (ArrayCreation == "Random")
                 {
-                    MyArray = GetArray.GetRandomArray(ArrayLength);
+                    MyArray = GetArray.GetRandomArray(ArrayLength, MinBorder, MaxBorder);
                 }
             }
             else
             {
-                MessageBox.Show("Please, choose what array you want to create!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please, choose what array you want to create!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (MaxBorder < MinBorder + MyArray.Length)
+            {
+                MessageBox.Show("Enter the borders that are at least equal to the length of an array!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (BlocksPanel != null)
@@ -220,14 +257,14 @@ namespace КР
                 {
                     using (StreamWriter writer = new StreamWriter(filePath))
                     {
-                        writer.WriteLine("Generated array:");
+                        writer.WriteLine($"Generated array (length - {MyArray.Length}):");
                         writer.WriteLine(string.Join(", ", MyArray));
                         writer.WriteLine("Sorted array:");
                         writer.WriteLine(string.Join(", ", SortedArray));
                         writer.WriteLine("Date and time of saving: " + DateTime.Now.ToString());
                     }
 
-                    MessageBox.Show("File has been successfully saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("File has been successfully saved.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -240,7 +277,7 @@ namespace КР
             int panelHeight = blocksPanel.ClientSize.Height;
             int panelWidth = blocksPanel.ClientSize.Width;
 
-            if (MyArray.Length <= blocksPanel.ClientSize.Width)
+            if (MyArray.Length <= 300)
             {
                 int blockWidth = panelWidth / MyArray.Length;
                 if (blockWidth < 1)
@@ -269,8 +306,8 @@ namespace КР
             }
             else
             {
-                VisualiseArray = new int[blocksPanel.ClientSize.Width];
-                for (int i = 0; i < blocksPanel.ClientSize.Width; i++)
+                VisualiseArray = new int[300];
+                for (int i = 0; i < VisualiseArray.Length; i++)
                 {
                     VisualiseArray[i] = MyArray[i];
                 }
@@ -286,7 +323,7 @@ namespace КР
                 {
                     int height = VisualiseArray[i];
                     int scaledHeight = 1 + (height - minHeight) * (panelHeight - 1) / (maxHeight - minHeight);
-                    int x = i * blockWidth;
+                    int x = (i * panelWidth) / VisualiseArray.Length;
                     int y = panelHeight - scaledHeight;
 
                     Panel block = new Panel
@@ -330,49 +367,110 @@ namespace КР
         }
         private void PerformSorting()
         {
-            if (SortingMethod == "Quick Sort")
+            if (ArrayLength <= 300)
             {
-                if (SortingOrder == "Ascending")
+                if (SortingMethod == "Quick Sort")
                 {
-                    QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
-                    QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1);
-                    QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    if (SortingOrder == "Ascending")
+                    {
+                        QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                    if (SortingOrder == "Descending")
+                    {
+                        QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
                 }
-                if (SortingOrder == "Descending")
+                else if (SortingMethod == "Heap Sort")
                 {
-                    QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
-                    QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1);
-                    QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    if (SortingOrder == "Ascending")
+                    {
+                        HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length);
+                        HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                    if (SortingOrder == "Descending")
+                    {
+                        HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length);
+                        HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                }
+                else if (SortingMethod == "Smooth Sort")
+                {
+                    if (SortingOrder == "Ascending")
+                    {
+                        SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        SmoothSort.SmoothSortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                   if (SortingOrder == "Descending")
+                    {
+                        SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        SmoothSort.SmoothSortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
                 }
             }
-            else if (SortingMethod == "Heap Sort")
+            else
             {
-                if (SortingOrder == "Ascending")
+                for (int i = 0; i < VisualiseArray.Length; i++)
                 {
-                    HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
-                    SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length);
-                    HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    VisualiseArray[i] = MyArray[i];
                 }
-                if (SortingOrder == "Descending")
+                if (SortingMethod == "Quick Sort")
                 {
-                    HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
-                    SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length);
-                    HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    if (SortingOrder == "Ascending")
+                    {
+                        QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        QuickSort.QuicksortAscending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                    if (SortingOrder == "Descending")
+                    {
+                        QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        QuickSort.QuicksortDescending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
                 }
-            }
-            else if (SortingMethod == "Smooth Sort")
-            {
-                if (SortingOrder == "Ascending")
+                else if (SortingMethod == "Heap Sort")
                 {
-                    SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
-                    SortedArray = SmoothSort.SmoothSortAscending(SortedArray);
-                    SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    if (SortingOrder == "Ascending")
+                    {
+                        SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length);
+                        HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        VisualiseArray = HeapSort.HeapsortAscending(VisualiseArray, VisualiseArray.Length);
+                        HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                    if (SortingOrder == "Descending")
+                    {
+                        SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length);
+                        HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        VisualiseArray = HeapSort.HeapsortDescending(VisualiseArray, VisualiseArray.Length);
+                        HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
                 }
-                if (SortingOrder == "Descending")
+                else if (SortingMethod == "Smooth Sort")
                 {
-                    SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
-                    SortedArray = SmoothSort.SmoothSortDescending(SortedArray);
-                    SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    if (SortingOrder == "Ascending")
+                    {
+                        SmoothSort.SmoothSortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        SmoothSort.SmoothSortAscending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
+                    if (SortingOrder == "Descending")
+                    {
+                        SmoothSort.SmoothSortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
+                        SmoothSort.SmoothSortDescending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
+                    }
                 }
             }
         }

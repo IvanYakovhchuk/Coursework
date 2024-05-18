@@ -17,13 +17,27 @@ namespace Classes
             }
             
             int pivot = PartitionAscending(arr, start, end);
-            if (pivot < 0)
-            { return; }
             QuicksortAscending(arr, start, pivot - 1);
             QuicksortAscending(arr, pivot + 1, end);
         }
         private static int PartitionAscending(int[] arr, int start, int end)
         {
+            int mid = start + (end - start) / 2;
+            if (arr[start] > arr[mid])
+            {
+                (arr[start], arr[mid]) = (arr[mid], arr[start]);
+                OnArraySwapped(start, mid);
+            }
+            if (arr[start] > arr[end])
+            {
+                (arr[start], arr[end]) = (arr[end], arr[start]);
+                OnArraySwapped(start, end);
+            }
+            if (arr[mid] > arr[end])
+            {
+                (arr[mid], arr[end]) = (arr[end], arr[mid]);
+                OnArraySwapped(mid, end);
+            }
             int pivot = arr[end];
             int i = start - 1;
             for (int j = start; j < end; j++)
@@ -51,6 +65,22 @@ namespace Classes
         }
         private static int PartitionDescending(int[] arr, int start, int end)
         {
+            int mid = start + (end - start) / 2;
+            if (arr[start] > arr[mid])
+            {
+                (arr[start], arr[mid]) = (arr[mid], arr[start]);
+                OnArraySwapped(start, mid);
+            }
+            if (arr[start] > arr[end])
+            {
+                (arr[start], arr[end]) = (arr[end], arr[start]);
+                OnArraySwapped(start, end);
+            }
+            if (arr[mid] > arr[end])
+            {
+                (arr[mid], arr[end]) = (arr[end], arr[mid]);
+                OnArraySwapped(mid, end);
+            }
             int pivot = arr[end];
             int i = start - 1;
             for (int j = start; j < end; j++)
