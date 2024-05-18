@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Reflection;
-
-namespace Classes
+﻿namespace Classes
 {
     public class HeapSort
     {

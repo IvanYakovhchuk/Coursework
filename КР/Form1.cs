@@ -1,10 +1,4 @@
-using System.Runtime.CompilerServices;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Threading;
-using System.Threading.Tasks;
 using Classes;
-using System;
 
 namespace КР
 {

@@ -1,5 +1,3 @@
-using Classes;
-
 namespace КР
 {
     internal static class Program
@@ -7,8 +5,6 @@ namespace КР
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             Application.SetCompatibleTextRenderingDefault(false);
             Application.EnableVisualStyles();
             ApplicationConfiguration.Initialize();
