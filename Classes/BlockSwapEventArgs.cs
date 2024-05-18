@@ -1,14 +1,8 @@
 ﻿namespace Classes
 {
-    public class BlockSwapEventArgs : EventArgs
+    public class BlockSwapEventArgs(int index1, int index2) : EventArgs
     {
-        public int Index1 { get; }
-        public int Index2 { get; }
-
-        public BlockSwapEventArgs(int index1, int index2)
-        {
-            Index1 = index1;
-            Index2 = index2;
-        }
+        public int Index1 { get; } = index1;
+        public int Index2 { get; } = index2;
     }
 }

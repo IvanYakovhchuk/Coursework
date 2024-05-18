@@ -5,12 +5,8 @@ namespace Classes
     public class SmoothSort
     {
         private static readonly int[] LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109,
-            177, 287, 465, 753, 1219, 1973, 3193, 5167, 8361, 13529, 21891,
-            35421, 57313, 92735, 150049, 242785, 392835, 635621, 1028457,
-            1664079, 2692537, 4356617, 7049155, 11405773, 18454929, 29860703,
-            48315633, 78176337, 126491971, 204668309, 331160281, 535828591,
-            866988873];
-        private static void SiftAscending(int[] A, int pshift, int head)
+            177, 287, 465, 753, 1219, 1973, 3193, 5167, 8361, 13529, 21891];
+        private static void SiftAscending(int[] A, int pshift, int head, ref int complexity)
         {
             int val = A[head];
             while (pshift > 1)
@@ -24,6 +20,7 @@ namespace Classes
                 if (Compare(A[lf], A[rt]) >= 0)
                 {
                     A[head] = A[lf];
+                    complexity++;
                     OnArraySwapped(head, lf);
                     head = lf;
                     pshift -= 1;
@@ -31,6 +28,7 @@ namespace Classes
                 else
                 {
                     A[head] = A[rt];
+                    complexity++;
                     OnArraySwapped(head, rt);
                     head = rt;
                     pshift -= 2;
@@ -38,7 +36,7 @@ namespace Classes
             }
             A[head] = val;
         }
-        private static void SiftDescending(int[] A, int pshift, int head)
+        private static void SiftDescending(int[] A, int pshift, int head, ref int complexity)
         {
             int val = A[head];
             while (pshift > 1)
@@ -52,6 +50,7 @@ namespace Classes
                 if (Compare(A[lf], A[rt]) <= 0)
                 {
                     A[head] = A[lf];
+                    complexity++;
                     OnArraySwapped(head, lf);
                     head = lf;
                     pshift -= 1;
@@ -59,6 +58,7 @@ namespace Classes
                 else
                 {
                     A[head] = A[rt];
+                    complexity++;
                     OnArraySwapped(head, rt);
                     head = rt;
                     pshift -= 2;
@@ -66,7 +66,7 @@ namespace Classes
             }
             A[head] = val;
         }
-        private static void TrinkleAscending(int[] A, int p, int pshift, int head, bool isTrusty)
+        private static void TrinkleAscending(int[] A, int p, int pshift, int head, bool isTrusty, ref int complexity)
         {
             int val = A[head];
 
@@ -85,6 +85,7 @@ namespace Classes
                         break;
                 }
                 A[head] = A[stepson];
+                complexity++;
                 OnArraySwapped(head, stepson);
                 head = stepson;
                 int trail = BitOperations.TrailingZeroCount((uint)(p & ~1));
@@ -96,10 +97,10 @@ namespace Classes
             if (!isTrusty)
             {
                 A[head] = val;
-                SiftAscending(A, pshift, head);
+                SiftAscending(A, pshift, head, ref complexity);
             }
         }
-        private static void TrinkleDescending(int[] A, int p, int pshift, int head, bool isTrusty)
+        private static void TrinkleDescending(int[] A, int p, int pshift, int head, bool isTrusty, ref int complexity)
         {
             int val = A[head];
 
@@ -118,6 +119,7 @@ namespace Classes
                         break;
                 }
                 A[head] = A[stepson];
+                complexity++;
                 OnArraySwapped(head, stepson);
                 head = stepson;
                 int trail = BitOperations.TrailingZeroCount((uint)(p & ~1));
@@ -129,10 +131,10 @@ namespace Classes
             if (!isTrusty)
             {
                 A[head] = val;
-                SiftDescending(A, pshift, head);
+                SiftDescending(A, pshift, head, ref complexity);
             }
         }
-        public static void SmoothSortAscending(int[] A, int lo, int hi)
+        public static void SmoothSortAscending(int[] A, int lo, int hi, ref int complexity)
         {
             int head = lo;
             int p = 1;
@@ -142,7 +144,7 @@ namespace Classes
             {
                 if ((p & 3) == 3)
                 {
-                    SiftAscending(A, pshift, head);
+                    SiftAscending(A, pshift, head, ref complexity);
                     p >>= 2;
                     pshift += 2;
                 }
@@ -150,11 +152,11 @@ namespace Classes
                 {
                     if (LP[pshift - 1] >= hi - head)
                     {
-                        TrinkleAscending(A, p, pshift, head, false);
+                        TrinkleAscending(A, p, pshift, head, false, ref complexity);
                     }
                     else
                     {
-                        SiftAscending(A, pshift, head);
+                        SiftAscending(A, pshift, head, ref complexity);
                     }
 
                     if (pshift == 1)
@@ -172,7 +174,7 @@ namespace Classes
                 head++;
             }
 
-            TrinkleAscending(A, p, pshift, head, false);
+            TrinkleAscending(A, p, pshift, head, false, ref complexity);
 
             while (pshift != 1 || p != 1)
             {
@@ -188,13 +190,13 @@ namespace Classes
                     p ^= 7;
                     pshift -= 2;
 
-                    TrinkleAscending(A, p >> 1, pshift + 1, head - LP[pshift] - 1, true);
-                    TrinkleAscending(A, p, pshift, head - 1, true);
+                    TrinkleAscending(A, p >> 1, pshift + 1, head - LP[pshift] - 1, true, ref complexity);
+                    TrinkleAscending(A, p, pshift, head - 1, true, ref complexity);
                 }
                 head--;
             }
         }
-        public static void SmoothSortDescending(int[] A, int lo, int hi)
+        public static void SmoothSortDescending(int[] A, int lo, int hi, ref int complexity)
         {
             int head = lo;
             int p = 1;
@@ -204,7 +206,7 @@ namespace Classes
             {
                 if ((p & 3) == 3)
                 {
-                    SiftDescending(A, pshift, head);
+                    SiftDescending(A, pshift, head, ref complexity);
                     p >>= 2;
                     pshift += 2;
                 }
@@ -212,11 +214,11 @@ namespace Classes
                 {
                     if (LP[pshift - 1] >= hi - head)
                     {
-                        TrinkleDescending(A, p, pshift, head, false);
+                        TrinkleDescending(A, p, pshift, head, false, ref complexity);
                     }
                     else
                     {
-                        SiftDescending(A, pshift, head);
+                        SiftDescending(A, pshift, head, ref complexity);
                     }
 
                     if (pshift == 1)
@@ -234,7 +236,7 @@ namespace Classes
                 head++;
             }
 
-            TrinkleDescending(A, p, pshift, head, false);
+            TrinkleDescending(A, p, pshift, head, false, ref complexity);
 
             while (pshift != 1 || p != 1)
             {
@@ -250,8 +252,8 @@ namespace Classes
                     p ^= 7;
                     pshift -= 2;
 
-                    TrinkleDescending(A, p >> 1, pshift + 1, head - LP[pshift] - 1, true);
-                    TrinkleDescending(A, p, pshift, head - 1, true);
+                    TrinkleDescending(A, p >> 1, pshift + 1, head - LP[pshift] - 1, true, ref complexity);
+                    TrinkleDescending(A, p, pshift, head - 1, true, ref complexity);
                 }
                 head--;
             }

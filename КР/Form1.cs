@@ -21,9 +21,9 @@ namespace КР
         public Form1()
         {
             InitializeComponent();
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.Size = Screen.PrimaryScreen.WorkingArea.Size;
-            this.StartPosition = FormStartPosition.CenterScreen;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Size = Screen.PrimaryScreen.WorkingArea.Size;
+            StartPosition = FormStartPosition.CenterScreen;
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -53,67 +53,75 @@ namespace КР
 
         private Button AddButton(string text, int x, int y, int Height, int Width)
         {
-            Button button = new Button();
-            button.Text = text;
-            button.Location = new Point(x, y);
-            button.Height = Height;
-            button.Width = Width;
-            this.Controls.Add(button);
+            Button button = new()
+            {
+                Text = text,
+                Location = new Point(x, y),
+                Height = Height,
+                Width = Width
+            };
+            Controls.Add(button);
             return button;
         }
         private void AddLabel(string text, int x, int y, int Height, int Width, string Font, int FontSize, FontStyle fontStyle)
         {
-            Label label = new Label();
-            label.Text = text;
-            label.Width = Width;
-            label.Height = Height;
-            label.Font = new Font(Font, FontSize, fontStyle);
-            label.Location = new Point(x, y);
-            this.Controls.Add(label);
+            Label label = new()
+            {
+                Text = text,
+                Width = Width,
+                Height = Height,
+                Font = new Font(Font, FontSize, fontStyle),
+                Location = new Point(x, y)
+            };
+            Controls.Add(label);
         }
         private TextBox InitializeTextBox(int  x, int y, int Height, int Width)
         {
-            TextBox textBox = new TextBox();
-            textBox.Height = Height;
-            textBox.Width = Width;
-            textBox.Location = new Point(x, y);
-            textBox.BorderStyle = BorderStyle.FixedSingle;
-            this.Controls.Add(textBox);
+            TextBox textBox = new()
+            {
+                Height = Height,
+                Width = Width,
+                Location = new Point(x, y),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            Controls.Add(textBox);
             return textBox;
         }
-        private RadioButton AddRadioButton(string text, int x, int y, int Height, int Width)
+        private static RadioButton AddRadioButton(string text, int x, int y, int Height, int Width)
         {
-            RadioButton radioButton = new RadioButton();
-            radioButton.Text = text;
-            radioButton.Location = new Point(x, y);
-            radioButton.Height = Height;
-            radioButton.Width = Width;
+            RadioButton radioButton = new()
+            {
+                Text = text,
+                Location = new Point(x, y),
+                Height = Height,
+                Width = Width
+            };
             return radioButton;
         }
         private void InitializeRadioButtons()
         {
             RadioButton OrganisedArrayRadioButton = AddRadioButton("Organised", 100, 425, 50, 150);
             OrganisedArrayRadioButton.CheckedChanged += RadioButton_CheckedChanged;
-            this.Controls.Add(OrganisedArrayRadioButton);
+            Controls.Add(OrganisedArrayRadioButton);
             RadioButton BackOrganisedArrayRadioButton = AddRadioButton("Reversed", 100, 475, 50, 150);
             BackOrganisedArrayRadioButton.CheckedChanged += RadioButton_CheckedChanged;
-            this.Controls.Add(BackOrganisedArrayRadioButton);
+            Controls.Add(BackOrganisedArrayRadioButton);
             RadioButton RandomArrayRadioButton = AddRadioButton("Random", 100, 525, 50, 150);
             RandomArrayRadioButton.CheckedChanged += RadioButton_CheckedChanged;
-            this.Controls.Add(RandomArrayRadioButton);
+            Controls.Add(RandomArrayRadioButton);
 
         }
         private void RadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButton radioButton = sender as RadioButton;
+            RadioButton? radioButton = sender as RadioButton;
             if (radioButton != null && radioButton.Checked)
             {
                 ArrayCreation = radioButton.Text;
             }
         }
-        private ComboBox AddComboBox(object[] items, int x, int y)
+        private static ComboBox AddComboBox(object[] items, int x, int y)
         {
-            ComboBox ComboBox = new ComboBox();
+            ComboBox ComboBox = new();
             ComboBox.Items.AddRange(items);
             ComboBox.SelectedIndex = 0;
             ComboBox.Location = new Point(x, y);
@@ -123,26 +131,26 @@ namespace КР
         }
         private void InitializeComboBoxes()
         {
-            ComboBox methodComboBox = AddComboBox(new object[] { "Quick Sort", "Heap Sort", "Smooth Sort" }, 100, 675);
+            ComboBox methodComboBox = AddComboBox(["Quick Sort", "Heap Sort", "Smooth Sort"], 100, 675);
             SortingMethod = methodComboBox.SelectedItem.ToString();
-            methodComboBox.SelectedIndexChanged += methodComboBox_Checked;
-            this.Controls.Add(methodComboBox);
-            ComboBox orderComboBox = AddComboBox(new object[] { "Ascending", "Descending" }, 100, 825);
+            methodComboBox.SelectedIndexChanged += MethodComboBox_Checked;
+            Controls.Add(methodComboBox);
+            ComboBox orderComboBox = AddComboBox(["Ascending", "Descending"], 100, 825);
             SortingOrder = orderComboBox.SelectedItem.ToString();
-            orderComboBox.SelectedIndexChanged += orderComboBox_Checked;
-            this.Controls.Add(orderComboBox);
+            orderComboBox.SelectedIndexChanged += OrderComboBox_Checked;
+            Controls.Add(orderComboBox);
         }
-        private void methodComboBox_Checked(object sender, EventArgs e)
+        private void MethodComboBox_Checked(object sender, EventArgs e)
         {
-            ComboBox comboBox = sender as ComboBox;
+            ComboBox? comboBox = sender as ComboBox;
             if (comboBox != null && comboBox.SelectedItem != null)
             {
                 SortingMethod = comboBox.SelectedItem.ToString();
             }
         }
-        private void orderComboBox_Checked(object sender, EventArgs e)
+        private void OrderComboBox_Checked(object sender, EventArgs e)
         {
-            ComboBox comboBox = sender as ComboBox;
+            ComboBox? comboBox = sender as ComboBox;
             if (comboBox != null && comboBox.SelectedItem != null)
             {
                 SortingOrder = comboBox.SelectedItem.ToString();
@@ -215,7 +223,7 @@ namespace КР
             if (BlocksPanel != null)
             {
                 BlocksPanel.Controls.Clear();
-                this.Controls.Remove(BlocksPanel);
+                Controls.Remove(BlocksPanel);
                 BlocksPanel.Dispose();
                 BlocksPanel = null;
             }
@@ -226,7 +234,7 @@ namespace КР
                 AutoScroll = true,
                 BorderStyle = BorderStyle.FixedSingle
             };
-            this.Controls.Add(BlocksPanel);
+            Controls.Add(BlocksPanel);
             CreateBlocks(BlocksPanel);
             SortedArray = new int[ArrayLength];
             MyArray.CopyTo(SortedArray, 0);
@@ -239,17 +247,19 @@ namespace КР
                 MessageBox.Show("You have to create and sort an array in order to save the results!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Текстові файли (*.txt)|*.txt|Всі файли (*.*)|*.*";
-            saveFileDialog.Title = "Зберегти файл";
-            saveFileDialog.DefaultExt = "txt";
-            saveFileDialog.AddExtension = true;
+            SaveFileDialog saveFileDialog = new()
+            {
+                Filter = "Текстові файли (*.txt)|*.txt|Всі файли (*.*)|*.*",
+                Title = "Зберегти файл",
+                DefaultExt = "txt",
+                AddExtension = true
+            };
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filePath = saveFileDialog.FileName;
                 try
                 {
-                    using (StreamWriter writer = new StreamWriter(filePath))
+                    using (StreamWriter writer = new(filePath))
                     {
                         writer.WriteLine($"Generated array (length - {MyArray.Length}):");
                         writer.WriteLine(string.Join(", ", MyArray));
@@ -288,7 +298,7 @@ namespace КР
                     int x = i * panelWidth / MyArray.Length;
                     int y = panelHeight - scaledHeight;
 
-                    Panel block = new Panel
+                    Panel block = new()
                     {
                         Size = new Size(blockWidth, scaledHeight),
                         Location = new Point(x, y),
@@ -320,7 +330,7 @@ namespace КР
                     int x = (i * panelWidth) / VisualiseArray.Length;
                     int y = panelHeight - scaledHeight;
 
-                    Panel block = new Panel
+                    Panel block = new()
                     {
                         Size = new Size(blockWidth, scaledHeight),
                         Location = new Point(x, y),
@@ -331,19 +341,14 @@ namespace КР
                 }
             }
         }
-        public void SwapBars(Panel panel, int i, int j)
+        public static void SwapBars(Panel panel, int i, int j)
         {
-            if (panel.InvokeRequired)
-            {
-                panel.Invoke(new Action(() => SwapBars(panel, i, j)));
-                return;
-            }
             if (i < 0 || i >= panel.Controls.Count || j < 0 || j >= panel.Controls.Count)
             {
                 return;
             }
-            Panel block1 = panel.Controls[i] as Panel;
-            Panel block2 = panel.Controls[j] as Panel;
+            Panel? block1 = panel.Controls[i] as Panel;
+            Panel? block2 = panel.Controls[j] as Panel;
             if (block1 == null || block2 == null)
             {
                 return;
@@ -353,7 +358,7 @@ namespace КР
             block2.Location = new Point(tempX, block2.Location.Y);
             panel.Controls.SetChildIndex(block1, j);
             panel.Controls.SetChildIndex(block2, i);
-            System.Threading.Thread.Sleep(1);
+            Thread.Sleep(1);
         }
         private void Sorting_BlocksSwapped(object sender, BlockSwapEventArgs e)
         {
@@ -361,6 +366,7 @@ namespace КР
         }
         private void PerformSorting()
         {
+            int timeComplexity = 0;
             if (ArrayLength <= 300)
             {
                 if (SortingMethod == "Quick Sort")
@@ -368,103 +374,110 @@ namespace КР
                     if (SortingOrder == "Ascending")
                     {
                         QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
                     if (SortingOrder == "Descending")
                     {
                         QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
+                    MessageBox.Show($"Practical time complexity of this sorting is: {timeComplexity}");
                 }
                 else if (SortingMethod == "Heap Sort")
                 {
                     if (SortingOrder == "Ascending")
                     {
                         HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length);
+                        SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length, ref timeComplexity);
                         HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
                     if (SortingOrder == "Descending")
                     {
                         HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length);
+                        SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length, ref timeComplexity);
                         HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
+                    MessageBox.Show($"Practical time complexity of this sorting is: {timeComplexity}");
                 }
                 else if (SortingMethod == "Smooth Sort")
                 {
                     if (SortingOrder == "Ascending")
                     {
                         SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        SmoothSort.SmoothSortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.SmoothSortAscending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
                    if (SortingOrder == "Descending")
                     {
                         SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        SmoothSort.SmoothSortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.SmoothSortDescending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
+                    MessageBox.Show($"Practical time complexity of this sorting is: {timeComplexity}");
                 }
             }
             else
             {
+                int timeComplexityVis = 0;
                 for (int i = 0; i < VisualiseArray.Length; i++)
                 {
                     VisualiseArray[i] = MyArray[i];
                 }
                 if (SortingMethod == "Quick Sort")
-                {
+                { 
                     if (SortingOrder == "Ascending")
                     {
-                        QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        QuickSort.QuicksortAscending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        QuickSort.QuicksortAscending(VisualiseArray, 0, VisualiseArray.Length - 1, ref timeComplexityVis);
                         QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
                     if (SortingOrder == "Descending")
                     {
-                        QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        QuickSort.QuicksortDescending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         QuickSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        QuickSort.QuicksortDescending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        QuickSort.QuicksortDescending(VisualiseArray, 0, VisualiseArray.Length - 1, ref timeComplexityVis);
                         QuickSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
+                    MessageBox.Show($"Practical time complexity of this sorting is: {timeComplexity}");
                 }
                 else if (SortingMethod == "Heap Sort")
                 {
                     if (SortingOrder == "Ascending")
                     {
-                        SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length);
+                        SortedArray = HeapSort.HeapsortAscending(SortedArray, SortedArray.Length, ref timeComplexity);
                         HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        VisualiseArray = HeapSort.HeapsortAscending(VisualiseArray, VisualiseArray.Length);
+                        VisualiseArray = HeapSort.HeapsortAscending(VisualiseArray, VisualiseArray.Length, ref timeComplexityVis);
                         HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
                     if (SortingOrder == "Descending")
                     {
-                        SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length);
+                        SortedArray = HeapSort.HeapsortDescending(SortedArray, SortedArray.Length, ref timeComplexity);
                         HeapSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        VisualiseArray = HeapSort.HeapsortDescending(VisualiseArray, VisualiseArray.Length);
+                        VisualiseArray = HeapSort.HeapsortDescending(VisualiseArray, VisualiseArray.Length, ref timeComplexityVis);
                         HeapSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
+                    MessageBox.Show($"Practical time complexity of this sorting is: {timeComplexity}");
                 }
                 else if (SortingMethod == "Smooth Sort")
                 {
                     if (SortingOrder == "Ascending")
                     {
-                        SmoothSort.SmoothSortAscending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.SmoothSortAscending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        SmoothSort.SmoothSortAscending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        SmoothSort.SmoothSortAscending(VisualiseArray, 0, VisualiseArray.Length - 1, ref timeComplexityVis);
                         SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
                     if (SortingOrder == "Descending")
                     {
-                        SmoothSort.SmoothSortDescending(SortedArray, 0, SortedArray.Length - 1);
+                        SmoothSort.SmoothSortDescending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);
                         SmoothSort.BlocksSwapped += Sorting_BlocksSwapped;
-                        SmoothSort.SmoothSortDescending(VisualiseArray, 0, VisualiseArray.Length - 1);
+                        SmoothSort.SmoothSortDescending(VisualiseArray, 0, VisualiseArray.Length - 1, ref timeComplexityVis);
                         SmoothSort.BlocksSwapped -= Sorting_BlocksSwapped;
                     }
+                    MessageBox.Show($"Practical time complexity of this sorting is: {timeComplexity}");
                 }
             }
         }
