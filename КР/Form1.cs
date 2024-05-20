@@ -284,10 +284,6 @@ namespace КР
             if (MyArray.Length <= 300)
             {
                 int blockWidth = panelWidth / MyArray.Length;
-                if (blockWidth < 1)
-                {
-                    blockWidth = 1;
-                }
                 int minHeight = MyArray.Min();
                 int maxHeight = MyArray.Max();
 
@@ -316,10 +312,6 @@ namespace КР
                     VisualiseArray[i] = MyArray[i];
                 }
                 int blockWidth = panelWidth / VisualiseArray.Length;
-                if (blockWidth < 1)
-                {
-                    blockWidth = 1;
-                }
                 int minHeight = VisualiseArray.Min();
                 int maxHeight = VisualiseArray.Max();
 
