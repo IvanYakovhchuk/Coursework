@@ -2,7 +2,7 @@
 
 namespace Classes
 {
-    public class SmoothSort
+    public static class SmoothSort
     {
         private static readonly int[] LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109,
             177, 287, 465, 753, 1219, 1973, 3193, 5167, 8361, 13529, 21891];
@@ -11,26 +11,26 @@ namespace Classes
             int val = A[head];
             while (pshift > 1)
             {
-                int rt = head - 1;
-                int lf = head - 1 - LP[pshift - 2];
+                int right = head - 1;
+                int left = head - 1 - LP[pshift - 2];
 
-                if (Compare(val, A[lf]) >= 0 && Compare(val, A[rt]) >= 0)
+                if (Compare(val, A[left]) >= 0 && Compare(val, A[right]) >= 0)
                     break;
 
-                if (Compare(A[lf], A[rt]) >= 0)
+                if (Compare(A[left], A[right]) >= 0)
                 {
-                    A[head] = A[lf];
+                    A[head] = A[left];
                     complexity++;
-                    OnArraySwapped(head, lf);
-                    head = lf;
+                    OnArraySwapped(head, left);
+                    head = left;
                     pshift -= 1;
                 }
                 else
                 {
-                    A[head] = A[rt];
+                    A[head] = A[right];
                     complexity++;
-                    OnArraySwapped(head, rt);
-                    head = rt;
+                    OnArraySwapped(head, right);
+                    head = right;
                     pshift -= 2;
                 }
             }
@@ -41,26 +41,26 @@ namespace Classes
             int val = A[head];
             while (pshift > 1)
             {
-                int rt = head - 1;
-                int lf = head - 1 - LP[pshift - 2];
+                int right = head - 1;
+                int left = head - 1 - LP[pshift - 2];
 
-                if (Compare(val, A[lf]) <= 0 && Compare(val, A[rt]) <= 0)
+                if (Compare(val, A[left]) <= 0 && Compare(val, A[right]) <= 0)
                     break;
 
-                if (Compare(A[lf], A[rt]) <= 0)
+                if (Compare(A[left], A[right]) <= 0)
                 {
-                    A[head] = A[lf];
+                    A[head] = A[left];
                     complexity++;
-                    OnArraySwapped(head, lf);
-                    head = lf;
+                    OnArraySwapped(head, left);
+                    head = left;
                     pshift -= 1;
                 }
                 else
                 {
-                    A[head] = A[rt];
+                    A[head] = A[right];
                     complexity++;
-                    OnArraySwapped(head, rt);
-                    head = rt;
+                    OnArraySwapped(head, right);
+                    head = right;
                     pshift -= 2;
                 }
             }
@@ -79,9 +79,9 @@ namespace Classes
 
                 if (!isTrusty && pshift > 1)
                 {
-                    int rt = head - 1;
-                    int lf = head - 1 - LP[pshift - 2];
-                    if (Compare(A[rt], A[stepson]) >= 0 || Compare(A[lf], A[stepson]) >= 0)
+                    int right = head - 1;
+                    int left = head - 1 - LP[pshift - 2];
+                    if (Compare(A[right], A[stepson]) >= 0 || Compare(A[left], A[stepson]) >= 0)
                         break;
                 }
                 A[head] = A[stepson];
@@ -113,9 +113,9 @@ namespace Classes
 
                 if (!isTrusty && pshift > 1)
                 {
-                    int rt = head - 1;
-                    int lf = head - 1 - LP[pshift - 2];
-                    if (Compare(A[rt], A[stepson]) <= 0 || Compare(A[lf], A[stepson]) <= 0)
+                    int right = head - 1;
+                    int left = head - 1 - LP[pshift - 2];
+                    if (Compare(A[right], A[stepson]) <= 0 || Compare(A[left], A[stepson]) <= 0)
                         break;
                 }
                 A[head] = A[stepson];
@@ -134,13 +134,13 @@ namespace Classes
                 SiftDescending(A, pshift, head, ref complexity);
             }
         }
-        public static void SmoothSortAscending(int[] A, int lo, int hi, ref int complexity)
+        public static void SmoothSortAscending(int[] A, int low, int high, ref int complexity)
         {
-            int head = lo;
+            int head = low;
             int p = 1;
             int pshift = 1;
 
-            while (head < hi)
+            while (head < high)
             {
                 if ((p & 3) == 3)
                 {
@@ -150,7 +150,7 @@ namespace Classes
                 }
                 else
                 {
-                    if (LP[pshift - 1] >= hi - head)
+                    if (LP[pshift - 1] >= high - head)
                     {
                         TrinkleAscending(A, p, pshift, head, false, ref complexity);
                     }
@@ -196,13 +196,13 @@ namespace Classes
                 head--;
             }
         }
-        public static void SmoothSortDescending(int[] A, int lo, int hi, ref int complexity)
+        public static void SmoothSortDescending(int[] A, int low, int high, ref int complexity)
         {
-            int head = lo;
+            int head = low;
             int p = 1;
             int pshift = 1;
 
-            while (head < hi)
+            while (head < high)
             {
                 if ((p & 3) == 3)
                 {
@@ -212,7 +212,7 @@ namespace Classes
                 }
                 else
                 {
-                    if (LP[pshift - 1] >= hi - head)
+                    if (LP[pshift - 1] >= high - head)
                     {
                         TrinkleDescending(A, p, pshift, head, false, ref complexity);
                     }

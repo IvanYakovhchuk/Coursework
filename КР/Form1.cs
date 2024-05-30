@@ -50,7 +50,6 @@ namespace КР
             startButton.Click += StrtBtnClick_Click;
             saveButton.Click += SvBtnClick_Click;
         }
-
         private Button AddButton(string text, int x, int y, int Height, int Width)
         {
             Button button = new()
@@ -418,7 +417,7 @@ namespace КР
                     VisualiseArray[i] = MyArray[i];
                 }
                 if (SortingMethod == "Quick Sort")
-                { 
+                {
                     if (SortingOrder == "Ascending")
                     {
                         QuickSort.QuicksortAscending(SortedArray, 0, SortedArray.Length - 1, ref timeComplexity);

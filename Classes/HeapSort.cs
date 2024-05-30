@@ -1,6 +1,6 @@
 ﻿namespace Classes
 {
-    public class HeapSort
+    public static class HeapSort
     {
         private static void HeapifyUp(int[] array, int size, int index, ref int heapifyUpTime)
         { 
